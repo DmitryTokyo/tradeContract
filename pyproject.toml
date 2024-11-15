@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "test-ruslan"
+version = "0.1.0"
+description = ""
+authors = ["andimeon <andimeon@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+eth-ape = "^0.8.20"
+eth-typing = "4.1.0"
+eth-utils = "^2.3.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest-freezegun = "^0.4.2"
+setuptools = "^75.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

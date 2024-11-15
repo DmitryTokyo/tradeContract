@@ -1,0 +1,16 @@
+name: deal_contract
+
+plugins:
+  - name: solidity
+    version: 0.8.26
+  - name: foundry
+  - name: etherscan
+    version: 0.8.3
+
+solidity:
+  version: 0.8.26
+
+dependencies:
+  - name: OpenZeppelin
+    github: OpenZeppelin/openzeppelin-contracts
+    version: 5.1.0
