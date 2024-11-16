@@ -72,8 +72,6 @@ contract Sales {
         _;
     }
 
-    event DebugTime(uint256 releaseTime, uint256 deploymentTime, uint256 delta);
-
     function confirmFulfillment() public onlySeller atStatus(Status.DEPLOYED) {
         uint256 balance = IERC20(token).balanceOf(address(this));
         require(balance >= contractAmount, 'Not enough tokens on this contract');
@@ -91,8 +89,7 @@ contract Sales {
         if (msg.sender == seller) {
             require(status == Status.FULFILLED, "Seller cannot call the function with status is not equal FULFILLED");
             uint256 releaseTime = block.timestamp;
-            emit DebugTime(releaseTime, deploymentTime, releaseTime - deploymentTime);
-            require(releaseTime - deploymentTime < timeExecutionDelta, "Save buyer time is not finished yet");
+            require(releaseTime - deploymentTime > timeExecutionDelta, "Save buyer time is not finished yet");
         }
         require(IERC20(token).transfer(seller, balance), "Transfer failed");
         status = Status.EXECUTED;
