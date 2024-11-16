@@ -89,7 +89,7 @@ contract Sales {
         status = Status.FULFILLED;
     }
 
-    function release() public payable onlySellerOrBuyer {
+    function release() public onlySellerOrBuyer {
         uint256 balance = IERC20(token).balanceOf(address(this));
         require(balance == contractAmount, 'Not enough tokens on this contract');
         require(
@@ -114,7 +114,7 @@ contract Sales {
         status = Status.AGENT_INVITED;
     }
 
-    function sendMoney(uint8 agentFeePercent, uint8 buyerFeePercent, uint8 sellerFeePercent) public payable onlyAgent {
+    function sendMoney(uint8 agentFeePercent, uint8 buyerFeePercent, uint8 sellerFeePercent) public onlyAgent {
         uint256 balance = IERC20(token).balanceOf(address(this));
         require(balance == contractAmount, 'Not enough tokens on this contract');
         require(agentFeePercent + buyerFeePercent + sellerFeePercent == 100, "Percentages must add up to 100");
@@ -127,7 +127,7 @@ contract Sales {
         status = Status.DISPUTE_FINISHED;
     }
 
-    function returnWrongToken(address _token) public payable onlyBuyer {
+    function returnWrongToken(address _token) public onlyBuyer {
         require(address(token) == address(_token), 'Wrong token address');
         uint256 balance = IERC20(_token).balanceOf(address(this));
         require(balance != 0, 'Not enough tokens');
