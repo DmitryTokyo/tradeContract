@@ -190,3 +190,23 @@ def test_send_money_invalid_percentages_amount_for_agent(
     sales_contract.inviteAgent(sender=buyer)
     with pytest.raises(Exception, match="Agent fee percent must be between 1 and 3 inclusive"):
         sales_contract.sendMoney(agent_percentage, 40, 49, sender=agent)
+
+
+def test_return_wrong_token_successfully(allocate_tokens_factory, sales_contract, test_wrong_token, buyer):
+    allocate_tokens_factory(1000 * 10 ** 18, test_wrong_token)
+    sales_contract.returnWrongToken(test_wrong_token.address, sender=buyer)
+    contract_balance_after = test_wrong_token.balanceOf(sales_contract.address)
+    assert contract_balance_after == 0
+
+
+def test_return_wrong_token_failed_due_token(allocate_tokens_default, sales_contract, test_token, buyer):
+    with pytest.raises(Exception, match="Cannot return the primary contract token"):
+        sales_contract.returnWrongToken(test_token.address, sender=buyer)
+
+
+def test_return_wrong_token_failed_due_not_enough_balance(
+    allocate_tokens_factory, sales_contract, test_wrong_token, buyer,
+):
+    allocate_tokens_factory(0, test_wrong_token)
+    with pytest.raises(Exception, match="No balance available for the provided token"):
+        sales_contract.returnWrongToken(test_wrong_token.address, sender=buyer)

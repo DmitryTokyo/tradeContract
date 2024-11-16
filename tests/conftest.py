@@ -23,6 +23,12 @@ def test_token(buyer, project):
 
 
 @pytest.fixture
+def test_wrong_token(buyer, project):
+    initial_supply = 1_000_000 * 10 ** 18
+    return buyer.deploy(project.MyTestToken, initial_supply)
+
+
+@pytest.fixture
 def sales_contract(seller, buyer, agent, test_token, project):
     contract_amount = 1000 * 10 ** 18
     time_execution_delta = 86400
@@ -64,7 +70,12 @@ def allocate_tokens_default(test_token, buyer, sales_contract, sales_test_contra
 
 @pytest.fixture
 def allocate_tokens_factory(test_token, buyer, sales_contract):
-    def _allocate_tokens(contract_amount=None):
-        contract_amount = contract_amount or 1000 * 10 ** 18
-        test_token.transfer(sales_contract, contract_amount, sender=buyer)
+    def _allocate_tokens(contract_amount=None, token=None):
+        token = token or test_token
+        contract_amount = (
+            contract_amount
+            if contract_amount is not None
+            else 1000 * 10 ** 18
+        )
+        token.transfer(sales_contract, contract_amount, sender=buyer)
     return _allocate_tokens
