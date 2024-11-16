@@ -141,8 +141,11 @@ def test_invite_agent_called_by_wrong_status(sales_contract, allocate_tokens_def
 
 def test_send_money_success(sales_contract, allocate_tokens_factory, test_token, agent, buyer, seller):
     allocate_tokens_factory(1000 * 10 ** 18)
-    agent_fee_percent = 10
-    buyer_fee_percent = 40
+    sales_contract.confirmFulfillment(sender=seller)
+    sales_contract.openDispute(sender=buyer)
+    sales_contract.inviteAgent(sender=buyer)
+    agent_fee_percent = 2
+    buyer_fee_percent = 48
     seller_fee_percent = 50
 
     initial_agent_balance = test_token.balanceOf(agent.address)
@@ -165,12 +168,25 @@ def test_send_money_success(sales_contract, allocate_tokens_factory, test_token,
     assert sales_contract.status() == 5
 
 
-def test_send_money_not_enough_tokens(sales_contract, agent, allocate_tokens_factory):
-    allocate_tokens_factory(1)
-    with pytest.raises(Exception, match="Not enough tokens on this contract"):
-        sales_contract.sendMoney(10, 40, 50, sender=agent)
-
-
-def test_send_money_invalid_percentages(sales_contract, allocate_tokens_default, agent):
+def test_send_money_invalid_percentages(sales_contract, allocate_tokens_default, agent, buyer, seller):
+    sales_contract.confirmFulfillment(sender=seller)
+    sales_contract.openDispute(sender=buyer)
+    sales_contract.inviteAgent(sender=buyer)
     with pytest.raises(Exception, match="Percentages must add up to 100"):
-        sales_contract.sendMoney(10, 40, 49, sender=agent)
+        sales_contract.sendMoney(2, 48, 49, sender=agent)
+
+
+@pytest.mark.parametrize(
+    'agent_percentage',
+    [
+        0, 10,
+    ],
+)
+def test_send_money_invalid_percentages_amount_for_agent(
+    sales_contract, allocate_tokens_default, agent, agent_percentage, buyer, seller,
+):
+    sales_contract.confirmFulfillment(sender=seller)
+    sales_contract.openDispute(sender=buyer)
+    sales_contract.inviteAgent(sender=buyer)
+    with pytest.raises(Exception, match="Agent fee percent must be between 1 and 3 inclusive"):
+        sales_contract.sendMoney(agent_percentage, 40, 49, sender=agent)
