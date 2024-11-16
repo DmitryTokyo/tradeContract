@@ -120,9 +120,9 @@ contract Sales {
     }
 
     function returnWrongToken(address _token) public onlyBuyer {
-        require(address(token) == address(_token), 'Wrong token address');
+        require(address(token) != address(_token), "Cannot return the primary contract token");
         uint256 balance = IERC20(_token).balanceOf(address(this));
-        require(balance != 0, 'Not enough tokens');
+        require(balance > 0, "No balance available for the provided token");
         require(IERC20(_token).transfer(buyer, balance), "Transfer failed");
     }
 
