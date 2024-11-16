@@ -66,5 +66,5 @@ def allocate_tokens_default(test_token, buyer, sales_contract, sales_test_contra
 def allocate_tokens_factory(test_token, buyer, sales_contract):
     def _allocate_tokens(contract_amount=None):
         contract_amount = contract_amount or 1000 * 10 ** 18
-        tx = test_token.transfer(sales_contract, contract_amount, sender=buyer)
+        test_token.transfer(sales_contract, contract_amount, sender=buyer)
     return _allocate_tokens

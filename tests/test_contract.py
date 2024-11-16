@@ -40,10 +40,14 @@ def test_confirm_fulfilment_failed_by_small_amount(sales_contract, seller, alloc
         sales_contract.confirmFulfillment(sender=seller)
 
 
-def test_release_called_seller_successfully(sales_contract, seller, allocate_tokens_default):
-    sales_contract.confirmFulfillment(sender=seller)
-    sales_contract.release(sender=seller)
-    assert sales_contract.status() == 2
+def test_release_called_seller_successfully(sales_test_contract, seller, allocate_tokens_default, chain):
+    sales_test_contract.confirmFulfillment(sender=seller)
+    deployment_time = sales_test_contract.getDeploymentTime()
+    time_execution_delta = 86400
+    chain.provider.set_timestamp(deployment_time + time_execution_delta + 10)
+    chain.mine()
+    sales_test_contract.release(sender=seller)
+    assert sales_test_contract.status() == 2
 
 
 def test_release_called_buyer_successfully_with_initial_deploy_status(sales_contract, buyer, allocate_tokens_default):
@@ -94,7 +98,7 @@ def test_release_buyer_time_not_finished(sales_test_contract, seller, allocate_t
     sales_test_contract.confirmFulfillment(sender=seller)
     deployment_time = sales_test_contract.getDeploymentTime()
     time_execution_delta = 86400
-    chain.provider.set_timestamp(deployment_time + time_execution_delta + 1)
+    chain.provider.set_timestamp(deployment_time + time_execution_delta - 10)
     with pytest.raises(Exception, match="Save buyer time is not finished yet"):
         sales_test_contract.release(sender=seller)
 
