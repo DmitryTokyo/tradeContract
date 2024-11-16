@@ -11,6 +11,19 @@ def test_initial_contract_status(sales_contract, test_token, buyer, seller):
     assert sales_contract.status() == 0
 
 
+def test_sales_contract_constructor_with_token_address_is_not_contract(seller, project, buyer, agent):
+    with pytest.raises(Exception, match='Token address must be a contract'):
+        seller.deploy(
+            project.Sales,
+            0000,
+            seller,
+            buyer,
+            agent,
+            1000 * 10 ** 18,
+            86400
+        )
+
+
 def test_confirm_fulfilment_successfully(sales_contract, seller, allocate_tokens_default):
     tx = sales_contract.confirmFulfillment(sender=seller)
     assert tx is not None
