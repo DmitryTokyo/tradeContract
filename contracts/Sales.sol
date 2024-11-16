@@ -31,6 +31,7 @@ contract Sales {
         uint256 _contractAmount,
         uint32 _timeExecutionDelta
         ) {
+        require(isContract(_tokenAddress), "Token address must be a contract");
         token = _tokenAddress;
         seller = _sellerAddress;
         buyer = _buyerAddress;
@@ -38,6 +39,14 @@ contract Sales {
         contractAmount = _contractAmount;
         timeExecutionDelta = _timeExecutionDelta;
         status = Status.DEPLOYED;
+    }
+
+    function isContract(address _addr) internal view returns (bool) {
+        uint256 size;
+        assembly {
+            size := extcodesize(_addr)
+        }
+        return size > 0;
     }
 
     error FunctionInvalidAtThisStatus();
