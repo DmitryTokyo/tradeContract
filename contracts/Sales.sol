@@ -76,14 +76,14 @@ contract Sales {
 
     function confirmFulfillment() public onlySeller atStatus(Status.DEPLOYED) {
         uint256 balance = IERC20(token).balanceOf(address(this));
-        require(balance == contractAmount, 'Not enough tokens on this contract');
+        require(balance >= contractAmount, 'Not enough tokens on this contract');
         deploymentTime = block.timestamp;
         status = Status.FULFILLED;
     }
 
     function release() public onlySellerOrBuyer {
         uint256 balance = IERC20(token).balanceOf(address(this));
-        require(balance == contractAmount, 'Not enough tokens on this contract');
+        require(balance >= contractAmount, 'Not enough tokens on this contract');
         require(
             status == Status.DEPLOYED || status == Status.FULFILLED || status == Status.DISPUTED,
             "Status can be only DEPLOYED, FULFILLED or DISPUTED"
@@ -109,11 +109,11 @@ contract Sales {
     function sendMoney(uint8 agentFeePercent, uint8 buyerFeePercent, uint8 sellerFeePercent) public {
         require(msg.sender == agent, "Only agent can call this function.");
         uint256 balance = IERC20(token).balanceOf(address(this));
-        require(balance == contractAmount, 'Not enough tokens on this contract');
+        require(balance >= contractAmount, 'Not enough tokens on this contract');
         require(agentFeePercent + buyerFeePercent + sellerFeePercent == 100, "Percentages must add up to 100");
-        uint256 agentFee = balance * agentFeePercent / 100;
-        uint256 buyerFee = balance * buyerFeePercent / 100;
-        uint256 sellerFee = balance * sellerFeePercent / 100;
+        uint256 agentFee = contractAmount * agentFeePercent / 100;
+        uint256 buyerFee = contractAmount * buyerFeePercent / 100;
+        uint256 sellerFee = contractAmount * sellerFeePercent / 100;
         require(IERC20(token).transfer(agent, agentFee), "Transfer failed");
         require(IERC20(token).transfer(buyer, buyerFee), "Transfer failed");
         require(IERC20(token).transfer(seller, sellerFee), "Transfer failed");
