@@ -104,8 +104,9 @@ contract Sales {
         status = Status.AGENT_INVITED;
     }
 
-    function sendMoney(uint8 agentFeePercent, uint8 buyerFeePercent, uint8 sellerFeePercent) public {
+    function sendMoney(uint8 agentFeePercent, uint8 buyerFeePercent, uint8 sellerFeePercent) public atStatus(Status.AGENT_INVITED){
         require(msg.sender == agent, "Only agent can call this function.");
+        require(0 < agentFeePercent && agentFeePercent <= 3, "Agent fee percent must be between 1 and 3 inclusive");
         uint256 balance = IERC20(token).balanceOf(address(this));
         require(balance >= contractAmount, 'Not enough tokens on this contract');
         require(agentFeePercent + buyerFeePercent + sellerFeePercent == 100, "Percentages must add up to 100");
