@@ -72,8 +72,6 @@ contract Sales {
         _;
     }
 
-    event DebugState(uint256 releaseTime, uint256 deploymentTime, uint256 timeDelta, uint256 timeExDelta);
-
     function confirmFulfillment() public onlySeller atStatus(Status.DEPLOYED) {
         uint256 balance = IERC20(token).balanceOf(address(this));
         require(balance >= contractAmount, 'Not enough tokens on this contract');
