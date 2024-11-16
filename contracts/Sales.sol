@@ -50,14 +50,6 @@ contract Sales {
         _;
     }
 
-    modifier onlyAgent {
-        require(
-            msg.sender == agent,
-            "Only agent can call this function."
-        );
-        _;
-    }
-    
     modifier onlySeller {
         require(
             msg.sender == seller,
@@ -114,7 +106,8 @@ contract Sales {
         status = Status.AGENT_INVITED;
     }
 
-    function sendMoney(uint8 agentFeePercent, uint8 buyerFeePercent, uint8 sellerFeePercent) public onlyAgent {
+    function sendMoney(uint8 agentFeePercent, uint8 buyerFeePercent, uint8 sellerFeePercent) public {
+        require(msg.sender == agent, "Only agent can call this function.");
         uint256 balance = IERC20(token).balanceOf(address(this));
         require(balance == contractAmount, 'Not enough tokens on this contract');
         require(agentFeePercent + buyerFeePercent + sellerFeePercent == 100, "Percentages must add up to 100");
